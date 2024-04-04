@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\setcounter{theorem}{1}
+\title{XG Boost Model}
+\author{Kangbo Shi}
+\date{April 2023}
+
+\begin{document}
+
+\maketitle
+
+Training Loss:
+
+1. MSE: $\displaystyle L(\theta) = \sum_i (y_i-\hat{y}_i)^2$
+
+2. Logistic Loss: $\displaystyle L(\theta) = \sum_i [y_i\ln(1+e^{-\hat{y}_i})+(1-y_i)\ln(1+e^{\hat{y}_i})]$
+
+\bigskip
+
+\bigskip
+
+Modified Logistic Loss:
+
+Obj is the objective function and $f_i$ is the learning function. l is the training loss and $\hat{y_i}^{(t)}$ is the predicted value at step t.
+
+$\displaystyle obj = \sum^n_{i=1} l(y_i, \hat{y}_i^{(t)})+\sum^t_{i=1}\omega (f_i)$
+
+$\displaystyle \text{obj}^{(t)}  = \sum_{i=1}^n l(y_i, \hat{y}_i^{(t)}) + \sum_{i=1}^t\omega(f_i) = \sum_{i=1}^n l(y_i, \hat{y}_i^{(t-1)} + f_t(x_i)) + \omega(f_t) + \mathrm{constant}$
+
+Using Mean Square Error as our loss function, we get:
+
+$\displaystyle \text{obj}^{(t)} = \sum_{i=1}^n (y_i - (\hat{y}_i^{(t-1)} + f_t(x_i)))^2 + \sum_{i=1}^t\omega(f_i) = \sum_{i=1}^n [2(\hat{y}_i^{(t-1)} - y_i)f_t(x_i) + f_t(x_i)^2] + \omega(f_t) + \mathrm{constant}$
+
+To get a better approximation of the loss function and make it applicable for computation, we take the second order Taylor expansion of loss function:
+
+$\text{obj}^{(t)} = \sum_{i=1}^n [l(y_i, \hat{y}_i^{(t-1)}) + g_i f_t(x_i) + \frac{1}{2} h_i f_t^2(x_i)] + \omega(f_t) + \mathrm{constant}$
+
+where $h_i$ and $g_i$ are: 
+
+$g_i = \partial_{\hat{y}_i^{(t-1)}} l(y_i, \hat{y}_i^{(t-1)})$
+
+$h_i = \partial_{\hat{y}_i^{(t-1)}}^2 l(y_i, \hat{y}_i^{(t-1)})$
+
+The final objective function of this algorithm becomes:
+
+$\sum_{i=1}^n [g_i f_t(x_i) + \frac{1}{2} h_i f_t^2(x_i)] + \omega(f_t)$
+
+\end{document}
